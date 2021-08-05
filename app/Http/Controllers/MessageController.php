@@ -15,13 +15,16 @@ class MessageController extends Controller {
 
     public function getOwnChat() {
         $user = auth()->user();
-        $chats = $user->userChat;
+        $chats = $user->userChat->map(function ($item, $key) {
+            $chat = Chat::find($item->chat_id);
+            return collect($chat);
+        });
         return response()->json(['chats' => $chats]);
     }
 
     public function getAllChat() {
         $chats = Chat::all();
-        return response()->json(['chats' => \Arr::add($chats)]);
+        return response()->json(['chats' => $chats]);
     }
 
     public function send(Request $request) {
